@@ -13,7 +13,7 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        return response()->json(Producto::all(), 200); //200: OK
+        return response()->json(Producto::all(), 200); // Mostrar todos los productos
     }
 
     /**
@@ -21,17 +21,22 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
-        //Validar los datos de entrada
+        //validar datos
         $datos = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             'descripcion' => ['nullable', 'string', 'max:255'],
-            'precio' => ['required', 'integer', 'min:0'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'categoria_id' => ['required', 'integer', 'exists:categorias,id'] //exists valida que el id exista en la tabla categorias
+            'precio' => ['required', 'integer', 'min:1000'],
+            'stock' => ['required', 'integer', 'min:1'],
         ]);
-        //Crear el producto
-        $producto = Producto::create($datos);       
-        return response()->json(['success' => true, 'message' => 'Producto creado'], 201); //201: Created
+
+        //guardar datos
+        $producto = Producto::create($datos);
+
+        //respuesta al cliente
+        return response()->json([
+            'success' => true,
+            'message' => 'Producto creado exitosamente',
+        ], 201);
     }
 
     /**
@@ -39,7 +44,7 @@ class ProductoController extends Controller
      */
     public function show(Producto $producto)
     {
-        return response()->json($producto, 200); //200: OK
+        return response()->json($producto, 200); // Mostrar un producto
     }
 
     /**
@@ -47,17 +52,22 @@ class ProductoController extends Controller
      */
     public function update(Request $request, Producto $producto)
     {
-        //Validar los datos de entrada
+         //validar datos
         $datos = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             'descripcion' => ['nullable', 'string', 'max:255'],
-            'precio' => ['required', 'integer', 'min:0'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'categoria_id' => ['required', 'integer', 'exists:categorias,id']
+            'precio' => ['required', 'integer', 'min:1000'],
+            'stock' => ['required', 'integer', 'min:1'],
         ]);
-        //Actualizar el producto
+
+        //actualizar datos
         $producto->update($datos);
-        return response()->json(['success' => true, 'message' => 'Producto actualizado'], 200); //200: OK
+
+        //respuesta al cliente
+        return response()->json([
+            'success' => true,
+            'message' => 'Producto actualizado exitosamente',
+        ], 200);
     }
 
     /**
@@ -65,11 +75,13 @@ class ProductoController extends Controller
      */
     public function destroy(Producto $producto)
     {
-        //si el producto tiene pedidos asociados, no se puede eliminar
-        if ($producto->pedidos->count() > 0) {
-            return response()->json(['success' => false, 'message' => 'No se puede eliminar el producto porque tiene pedidos asociados'], 409); //409: Conflict
-        }
-        $producto->delete();       
-        return response()->json(['success' => true, 'message' => 'Producto eliminado'], 204); //204: No content
+        //eliminar producto
+        $producto->delete();
+        
+        //Respuesta al cliente
+        return response()->json([
+            'success' => true,
+            'message' => 'Producto eliminado exitosamente',
+        ], 204);
     }
 }
